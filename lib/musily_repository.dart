@@ -12,3 +12,4 @@ export './get_artist_albums.dart';
 export './get_artist_songs.dart';
 export './get_artist_singles.dart';
 export './get_search_suggestions.dart';
+export './get_track_lyrics.dart';
