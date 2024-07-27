@@ -39,24 +39,23 @@ Future<List<Map<String, dynamic>>> searchInVideos(
   String query,
 ) async {
   final tracks = await ytMusic.searchVideos(query);
-  print(
-      'urls dos vídeos thumb: ${tracks.map((track) => track.thumbnails).expand((element) => element.map((el) => el.url)).join(', ')}');
+  getHash(VideoDetailed item) => generateTrackHash(
+        title: item.name,
+        artist: item.artist.name,
+        albumTitle: null,
+      );
   return tracks
       .map(
         (item) => {
           'id': item.videoId,
-          'hash': generateTrackHash(
-            title: item.name,
-            artist: item.artist.name,
-            albumTitle: null,
-          ),
+          'hash': getHash(item),
           'title': item.name,
           'artist': {
             'id': null,
             'name': item.artist.name,
           },
           'album': {
-            'id': null,
+            'id': getHash(item),
             'name': null,
           },
           'lowResImg': item.thumbnails[0].url,
