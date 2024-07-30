@@ -28,7 +28,7 @@ Future<List<Map<String, dynamic>>> getSmartQueue(
 
     if (artist['similarArtists'].isNotEmpty) {
       selectedArtistId = artist['similarArtists']
-              ?[random.nextInt(artist['similarArtists'].length)]['id'] ??
+              ?[random.nextInt(artist['similarArtists'].length - 1)]['id'] ??
           artistId;
     } else {
       selectedArtistId = artistId;
@@ -43,12 +43,12 @@ Future<List<Map<String, dynamic>>> getSmartQueue(
 
     for (int i = 0; i < (trackQuantity == 0 ? 1 : trackQuantity); i++) {
       final selectedTrack = artistTracks[random.nextInt(
-        artistTracks.length,
+        artistTracks.length - 1,
       )];
       if (selectedTracks
           .where((track) => track['hash'] == selectedTrack['hash'])
           .isEmpty) {
-        final randomPositon = random.nextInt(selectedTracks.length);
+        final randomPositon = random.nextInt(selectedTracks.length - 1);
         selectedTracks.insert(
           randomPositon == 0 ? 1 : randomPositon,
           selectedTrack..['fromSmartQueue'] = true,
