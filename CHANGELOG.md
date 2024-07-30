@@ -1,3 +1,7 @@
+## 1.1.2
+
+**Improve**: Loading more music in Magic Queue
+
 ## 1.1.1
 
 **Fix**: Range error
