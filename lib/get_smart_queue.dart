@@ -14,7 +14,12 @@ Future<List<Map<String, dynamic>>> getSmartQueue(
     )
   ];
   final filteredIds = [...artistIds.where((id) => id.isNotEmpty)];
-  final selectedArtistIds = (filteredIds..shuffle()).sublist(0, 4);
+  late final List<String> selectedArtistIds;
+  if (filteredIds.length > 3) {
+    selectedArtistIds = (filteredIds..shuffle()).sublist(0, 4);
+  } else {
+    selectedArtistIds = filteredIds;
+  }
   for (final artistId in selectedArtistIds) {
     final random = Random();
 
