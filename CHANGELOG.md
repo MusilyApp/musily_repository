@@ -1,3 +1,7 @@
+## 1.1.1
+
+**Fix**: Range error
+
 ## 1.1.0
 
 **Feature**: Magic Queue - Discover new music with automatic recommendations added to your current playlist.
