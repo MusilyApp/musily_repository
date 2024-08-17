@@ -341,7 +341,6 @@ class YoutubeDatasource implements MusilyDatasource {
       );
 
       for (final video in selectedVideos) {
-        print('buscando ${video.title}');
         final relatedSearch = await searchTracks(
           '${video.title} ${video.author}',
           includeVideos: false,
@@ -490,6 +489,8 @@ class YoutubeDatasource implements MusilyDatasource {
           highResImg: video.thumbnails.firstOrNull?.url,
           source: source,
         ),
+        highResImg: video.thumbnails.firstOrNull?.url,
+        lowResImg: video.thumbnails.firstOrNull?.url,
         source: source,
       ),
     );
