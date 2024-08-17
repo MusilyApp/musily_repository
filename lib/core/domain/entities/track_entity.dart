@@ -11,6 +11,7 @@ class TrackEntity {
   final SimplifiedAlbumEntity album;
   final String? lowResImg;
   final String? highResImg;
+  bool recommendedTrack;
   final Source source;
 
   TrackEntity({
@@ -19,9 +20,10 @@ class TrackEntity {
     required this.title,
     required this.artist,
     required this.album,
-    required this.lowResImg,
-    required this.highResImg,
+    this.lowResImg,
+    this.highResImg,
+    this.lyrics,
+    this.recommendedTrack = false,
     required this.source,
-    required this.lyrics,
   });
 }
