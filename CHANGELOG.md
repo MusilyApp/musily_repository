@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Refactored to new architecture
+
 ## 1.1.2
 
 **Improve**: Loading more music in Magic Queue
