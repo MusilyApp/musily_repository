@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dart_ytmusic_api/dart_ytmusic_api.dart';
 import 'package:musily_repository/core/domain/datasources/musily_datasource.dart';
 import 'package:musily_repository/core/domain/enums/source.dart';
@@ -15,6 +17,7 @@ import 'package:musily_repository/core/domain/entities/home_section_entity.dart'
 import 'package:musily_repository/core/data/entities/playlist_entity_impl.dart';
 import 'package:musily_repository/core/domain/entities/playlist_entity.dart';
 import 'package:musily_repository/core/domain/entities/track_entity.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YoutubeDatasource implements MusilyDatasource {
   final ytMusic = YTMusic();
@@ -318,7 +321,41 @@ class YoutubeDatasource implements MusilyDatasource {
 
   @override
   Future<List<TrackEntity>> getRelatedTracks(List<TrackEntity> tracks) async {
-    return [];
+    final shuffledTracks = List<TrackEntity>.from(tracks)..shuffle();
+    final selectedTracks =
+        shuffledTracks.sublist(0, min(3, shuffledTracks.length));
+    final random = Random();
+
+    final yt = YoutubeExplode();
+    final List<TrackEntity> relatedTracks = [...tracks];
+
+    for (final track in selectedTracks) {
+      final results = await yt.search('${track.title} ${track.artist.name}');
+      if (results.isEmpty) {
+        continue;
+      }
+      final relatedVideosList = await yt.videos.getRelatedVideos(results.first);
+      final selectedVideos = (relatedVideosList?.toList() ?? []).sublist(
+        0,
+        min(3, relatedVideosList?.length ?? 0),
+      );
+
+      for (final video in selectedVideos) {
+        print('buscando ${video.title}');
+        final relatedSearch = await searchTracks(
+          '${video.title} ${video.author}',
+          includeVideos: false,
+        );
+        final relatedTrack = relatedSearch.firstOrNull;
+        if (relatedTrack != null) {
+          relatedTracks.insert(
+            random.nextInt(relatedTracks.length),
+            relatedTrack..recommendedTrack = true,
+          );
+        }
+      }
+    }
+    return relatedTracks;
   }
 
   @override
@@ -415,27 +452,57 @@ class YoutubeDatasource implements MusilyDatasource {
   }
 
   @override
-  Future<List<TrackEntity>> searchTracks(String query) async {
+  Future<List<TrackEntity>> searchTracks(
+    String query, {
+    bool includeVideos = true,
+  }) async {
     final tracks = await ytMusic.searchSongs(query);
-    return tracks.map((track) {
-      return TrackEntity(
-        id: track.videoId,
+    final videos = await ytMusic.searchVideos(query);
+    final trackVideos = videos.map(
+      (video) => TrackEntity(
+        id: video.videoId,
         hash: generateTrackHash(
-          title: track.name,
-          artist: track.artist.name,
-          albumTitle: track.album?.name,
+          title: video.name,
+          artist: video.artist.name,
         ),
-        title: track.name,
+        title: video.name,
         artist: SimplifiedArtistEntityImpl(
-          id: track.artist.artistId,
-          name: track.artist.name,
+          id: video.artist.artistId,
+          name: video.artist.name,
+          source: source,
           highResImg: null,
           lowResImg: null,
-          source: source,
         ),
         album: SimplifiedAlbumEntityImpl(
-          id: track.album?.albumId ?? '',
-          title: track.album?.name ?? '',
+          id: generateTrackHash(
+            title: video.name,
+            artist: video.artist.name,
+          ),
+          title: '',
+          artist: SimplifiedArtistEntityImpl(
+            id: video.artist.artistId,
+            name: video.artist.name,
+            source: source,
+            highResImg: null,
+            lowResImg: null,
+          ),
+          lowResImg: video.thumbnails.firstOrNull?.url,
+          highResImg: video.thumbnails.firstOrNull?.url,
+          source: source,
+        ),
+        source: source,
+      ),
+    );
+    return [
+      ...tracks.map((track) {
+        return TrackEntity(
+          id: track.videoId,
+          hash: generateTrackHash(
+            title: track.name,
+            artist: track.artist.name,
+            albumTitle: track.album?.name,
+          ),
+          title: track.name,
           artist: SimplifiedArtistEntityImpl(
             id: track.artist.artistId,
             name: track.artist.name,
@@ -443,17 +510,32 @@ class YoutubeDatasource implements MusilyDatasource {
             lowResImg: null,
             source: source,
           ),
-          lowResImg: track.thumbnails[0].url.replaceAll('w60-h60', 'w100-h100'),
-          highResImg:
-              track.thumbnails[0].url.replaceAll('w60-h60', 'w600-h600'),
+          album: SimplifiedAlbumEntityImpl(
+            id: track.album?.albumId ?? '',
+            title: track.album?.name ?? '',
+            artist: SimplifiedArtistEntityImpl(
+              id: track.artist.artistId,
+              name: track.artist.name,
+              highResImg: null,
+              lowResImg: null,
+              source: source,
+            ),
+            lowResImg: track.thumbnails.firstOrNull?.url
+                .replaceAll('w60-h60', 'w100-h100'),
+            highResImg: track.thumbnails.firstOrNull?.url
+                .replaceAll('w60-h60', 'w600-h600'),
+            source: source,
+          ),
+          lowResImg: track.thumbnails.firstOrNull?.url
+              .replaceAll('w60-h60', 'w60-h60'),
+          highResImg: track.thumbnails.firstOrNull?.url
+              .replaceAll('w60-h60', 'w600-h600'),
           source: source,
-        ),
-        lowResImg: track.thumbnails[0].url.replaceAll('w60-h60', 'w100-h100'),
-        highResImg: track.thumbnails[0].url.replaceAll('w60-h60', 'w600-h600'),
-        source: source,
-        lyrics: null,
-      );
-    }).toList();
+          lyrics: null,
+        );
+      }),
+      if (includeVideos) ...trackVideos,
+    ];
   }
 
   @override
