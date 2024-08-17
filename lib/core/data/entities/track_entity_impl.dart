@@ -22,16 +22,19 @@ class TrackEntityImpl implements TrackEntity {
   final String? highResImg;
   @override
   final Source source;
+  @override
+  bool recommendedTrack;
 
   TrackEntityImpl({
     required this.id,
     required this.hash,
     required this.title,
-    required this.lyrics,
     required this.artist,
     required this.album,
-    required this.lowResImg,
-    required this.highResImg,
+    this.lowResImg,
+    this.highResImg,
+    this.lyrics,
+    this.recommendedTrack = false,
     required this.source,
   });
 }
