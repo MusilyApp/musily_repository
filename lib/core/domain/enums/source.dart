@@ -1,0 +1,4 @@
+enum Source {
+  youtube,
+  spotify,
+}
