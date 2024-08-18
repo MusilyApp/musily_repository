@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Get related tracks implemented
+
 ## 2.0.0
 
 - Refactored to new architecture
