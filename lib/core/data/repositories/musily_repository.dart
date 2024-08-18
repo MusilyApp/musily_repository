@@ -45,7 +45,6 @@ class MusilyRepository implements repo.MusilyRepository {
     if (config != null) {
       await spotifyDatasource.initialize();
     } else {
-      print('sertansdof');
       setDefaultSource(
         Source.youtube,
       );
