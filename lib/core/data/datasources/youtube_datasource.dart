@@ -347,6 +347,9 @@ class YoutubeDatasource implements MusilyDatasource {
         );
         final relatedTrack = relatedSearch.firstOrNull;
         if (relatedTrack != null) {
+          if (relatedTracks.map((e) => e.hash).contains(relatedTrack.hash)) {
+            continue;
+          }
           relatedTracks.insert(
             random.nextInt(relatedTracks.length),
             relatedTrack..recommendedTrack = true,
