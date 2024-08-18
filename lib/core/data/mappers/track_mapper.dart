@@ -20,7 +20,8 @@ class TrackMapper implements BaseMapper<TrackEntity> {
       lowResImg: map['lowResImg'] != null ? map['lowResImg'] as String : null,
       highResImg:
           map['highResImg'] != null ? map['highResImg'] as String : null,
-      source: Source.values.byName(map['source']),
+      recommendedTrack: map['recommendedTrack'] ?? false,
+      source: Source.values.byName(map['source'] ?? 'youtube'),
     );
   }
 
@@ -35,6 +36,7 @@ class TrackMapper implements BaseMapper<TrackEntity> {
       'album': SimplifiedAlbumMapper().toMap(item.album),
       'lowResImg': item.lowResImg,
       'highResImg': item.highResImg,
+      'recommendedTrack': item.recommendedTrack,
       'source': item.source.name,
     };
   }

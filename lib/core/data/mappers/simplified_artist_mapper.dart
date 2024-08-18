@@ -11,7 +11,7 @@ class SimplifiedArtistMapper implements BaseMapper<SimplifiedArtistEntity> {
       name: map['name'] != null ? map['name'] as String : null,
       highResImg: map['highResImg'],
       lowResImg: map['lowResImg'],
-      source: Source.values.byName(map['source']),
+      source: Source.values.byName(map['source'] ?? 'youtube'),
     );
   }
 

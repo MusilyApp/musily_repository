@@ -11,12 +11,12 @@ class SimplifiedAlbumMapper implements BaseMapper<SimplifiedAlbumEntity> {
       id: map['id'] as String,
       title: map['title'] as String,
       artist: SimplifiedArtistMapper().fromMap(
-        map['artist'],
+        map['artist'] ?? {'id': '', 'name': '', 'source': 'youtube'},
       ),
       lowResImg: map['lowResImg'] != null ? map['lowResImg'] as String : null,
       highResImg:
           map['highResImg'] != null ? map['highResImg'] as String : null,
-      source: Source.values.byName(map['source']),
+      source: Source.values.byName(map['source'] ?? 'youtube'),
     );
   }
 
